@@ -15,13 +15,12 @@ public class SqlFileParser {
     );
 
     public static String extractModelName(String text) {
-        String[] lines = text.split("\n", 20);
+        String[] lines = text.split("\\r?\\n");
+        int linesToCheck = Math.min(20, lines.length);
 
-        for (String line : lines) {
-            Matcher matcher = MODEL_PATTERN.matcher(line);
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
+        for (int i = 0; i < linesToCheck; i++) {
+            Matcher matcher = MODEL_PATTERN.matcher(lines[i]);
+            if (matcher.find()) return matcher.group(1);
         }
         return null;
     }

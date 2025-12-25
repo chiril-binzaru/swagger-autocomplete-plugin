@@ -12,6 +12,10 @@ repositories {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Tests
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 intellij {
@@ -25,6 +29,10 @@ java {
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
+
     patchPluginXml {
         sinceBuild = '231'
         untilBuild = '241.*'
