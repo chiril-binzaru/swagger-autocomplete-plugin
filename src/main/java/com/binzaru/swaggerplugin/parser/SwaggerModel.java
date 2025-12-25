@@ -1,0 +1,62 @@
+package com.binzaru.swaggerplugin.parser;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class SwaggerModel {
+    private String name;
+    private Map<String, PropertyInfo> properties;
+
+    public SwaggerModel(String name) {
+        this.name = name;
+        this.properties = new LinkedHashMap<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<String, PropertyInfo> getProperties() {
+        return properties;
+    }
+
+    public void addProperty(String name, PropertyInfo info) {
+        this.properties.put(name, info);
+    }
+
+    public PropertyInfo getProperty(String name) {
+        return properties.get(name);
+    }
+
+    public boolean hasProperty(String name) {
+        return properties.containsKey(name);
+    }
+
+    public static class PropertyInfo {
+        private String type;
+        private String description;
+        private String ref;
+
+        public PropertyInfo(String type, String description, String ref) {
+            this.type = type;
+            this.description = description;
+            this.ref = ref;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getRef() {
+            return ref;
+        }
+
+        public boolean isReference() {
+            return ref != null && !ref.isEmpty();
+        }
+    }
+}

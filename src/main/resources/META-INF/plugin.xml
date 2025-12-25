@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>com.binzaru.swagger-autocomplete</id>
+    <name>Swagger Autocomplete for SQL</name>
+    <vendor email="your@email.com">Binzaru</vendor>
+
+    <description><![CDATA[
+    Autocomplete for SQL aliases based on Swagger/OpenAPI schema.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.contributor
+                language="any"
+                implementationClass="com.binzaru.swaggerplugin.completion.AliasCompletionContributor"/>
+
+        <annotator
+                language="TEXT"
+                implementationClass="com.binzaru.swaggerplugin.highlighting.Highlighter"/>
+    </extensions>
+</idea-plugin>
