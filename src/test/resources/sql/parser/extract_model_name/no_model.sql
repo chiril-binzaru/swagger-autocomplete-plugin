@@ -1,0 +1,4 @@
+-- @swagger: ./swagger.json
+
+SELECT * FROM users
+WHERE id = 1

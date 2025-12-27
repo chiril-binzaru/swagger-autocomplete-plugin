@@ -4,6 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SqlFileParser {
+
+    private static final int HEADER_LINES_TO_SCAN = 20;
+
     private static final Pattern MODEL_PATTERN = Pattern.compile(
             "--\\s*@model:\\s*(\\w+)",
             Pattern.CASE_INSENSITIVE
@@ -16,7 +19,7 @@ public class SqlFileParser {
 
     public static String extractModelName(String text) {
         String[] lines = text.split("\\r?\\n");
-        int linesToCheck = Math.min(20, lines.length);
+        int linesToCheck = Math.min(HEADER_LINES_TO_SCAN, lines.length);
 
         for (int i = 0; i < linesToCheck; i++) {
             Matcher matcher = MODEL_PATTERN.matcher(lines[i]);
@@ -26,10 +29,11 @@ public class SqlFileParser {
     }
 
     public static String extractSwaggerPath(String text) {
-        String[] lines = text.split("\n", 20);
+        String[] lines = text.split("\\r?\\n");
+        int linesToCheck = Math.min(HEADER_LINES_TO_SCAN, lines.length);
 
-        for (String line : lines) {
-            Matcher matcher = SWAGGER_PATTERN.matcher(line);
+        for (int i = 0; i < linesToCheck; i++) {
+            Matcher matcher = SWAGGER_PATTERN.matcher(lines[i]);
             if (matcher.find()) {
                 return matcher.group(1);
             }
