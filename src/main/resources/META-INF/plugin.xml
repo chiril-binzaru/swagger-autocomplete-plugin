@@ -12,10 +12,18 @@
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor
                 language="any"
+                implementationClass="com.binzaru.swaggerplugin.completion.ModelNameCompletionContributor"/>
+
+        <completion.contributor
+                language="any"
                 implementationClass="com.binzaru.swaggerplugin.completion.AliasCompletionContributor"/>
 
         <annotator
                 language="TEXT"
                 implementationClass="com.binzaru.swaggerplugin.highlighting.Highlighter"/>
+
+        <annotator
+                language="TEXT"
+                implementationClass="com.binzaru.swaggerplugin.validation.SwaggerPathAnnotator"/>
     </extensions>
 </idea-plugin>

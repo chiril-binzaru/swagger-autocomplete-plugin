@@ -25,6 +25,13 @@ public class SqlFileParserTest {
         assertEquals(expectedSwaggerPath, actualSwaggerPath);
     }
 
+    @ParameterizedTest
+    @MethodSource("provideExtractAliasPathTestData")
+    public void testExtractAliasPath(String textBeforeCursor, String[] expectedAliasPath) {
+        String[] actualAliasPath = SqlFileParser.extractAliasPath(textBeforeCursor);
+        assertArrayEquals(expectedAliasPath, actualAliasPath);
+    }
+
 
 
     private static Stream<Arguments> provideExtractModelNameTestData() {
@@ -77,6 +84,31 @@ public class SqlFileParserTest {
                 Arguments.of(
                         loadSqlFile("sql/parser/extract_swagger_path/no_swagger.sql"),
                         null
+                )
+        );
+    }
+
+    private static Stream<Arguments> provideExtractAliasPathTestData() {
+        return Stream.of(
+                Arguments.of(
+                        "SELECT u.id AS \"address.",
+                        new String[]{"address", ""}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS \"customerId",
+                        new String[]{"customerId"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS address.city",
+                        new String[]{"address", "city"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS \"loyaltyProgramMembership.membershipTierLevel",
+                        new String[]{"loyaltyProgramMembership", "membershipTierLevel"}
+                ),
+                Arguments.of(
+                        "SELECT u.id",
+                        new String[0]
                 )
         );
     }

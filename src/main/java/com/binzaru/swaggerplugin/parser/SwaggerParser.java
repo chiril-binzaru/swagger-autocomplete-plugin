@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 import java.io.FileReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Set;
 
 public class SwaggerParser {
     private Map<String, SwaggerModel> models = new LinkedHashMap<>();
@@ -75,5 +77,11 @@ public class SwaggerParser {
 
     public boolean isLoaded() {
         return !models.isEmpty();
+    }
+
+    public Set<String> getAllModelNames() {
+        return models.keySet().stream()
+                .map(name -> models.get(name).getName())
+                .collect(Collectors.toSet());
     }
 }

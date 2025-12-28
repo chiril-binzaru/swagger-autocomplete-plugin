@@ -15,7 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class AliasCompletionContributor extends CompletionContributor {
+
+    /**
+     * Parser that loads and stores Swagger/OpenAPI schema models from .json file.
+     * Holds parsed model structures in memory for autocomplete suggestions.
+     */
     private final SwaggerParser parser = new SwaggerParser();
+
     private String lastLoadedSwaggerPath = null;
 
     public AliasCompletionContributor() {

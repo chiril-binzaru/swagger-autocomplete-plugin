@@ -19,6 +19,11 @@ public class Highlighter implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
+        // Обрабатываем только листовые элементы
+        if (element.getFirstChild() != null) {
+            return;
+        }
+
         String text = element.getText();
 
         Matcher matcher = ANNOTATION_PATTERN.matcher(text);
