@@ -36,4 +36,16 @@ tasks {
     test {
         useJUnitPlatform()
     }
+
+    // Отключаем IntelliJ sandbox для unit тестов
+    // Это убирает warnings и ускоряет запуск с ~2 минут до нескольких секунд
+    prepareTestSandbox { enabled = false }
+    prepareTest { enabled = false }
+    instrumentTestCode { enabled = false }
+
+    // Убираем зависимость test task от IntelliJ Platform tasks
+    test {
+        dependsOn -= prepareTest
+        classpath = sourceSets.test.runtimeClasspath
+    }
 }
