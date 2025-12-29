@@ -43,3 +43,4 @@ bin/
 
 ### Plugin Sandbox ###
 .idea-sandbox/
+.intellijPlatform/
