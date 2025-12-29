@@ -1,11 +1,9 @@
 package com.binzaru.swaggerplugin.validation;
 
-import com.binzaru.swaggerplugin.parser.SqlFileParser;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +13,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SwaggerPathAnnotator implements Annotator {
+public class SwaggerPathValidator implements Annotator {
     private static final Pattern SWAGGER_PATTERN = Pattern.compile(
             "--\\s*@swagger:\\s*([^\\s]+)",
             Pattern.CASE_INSENSITIVE

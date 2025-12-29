@@ -17,23 +17,40 @@ public class Highlighter implements Annotator {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static final Pattern PARAMETER_PATTERN = Pattern.compile(
+            "&(\\w+)",  // &param_name
+            Pattern.CASE_INSENSITIVE
+    );
+
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        // Обрабатываем только листовые элементы
         if (element.getFirstChild() != null) {
             return;
         }
 
         String text = element.getText();
 
-        Matcher matcher = ANNOTATION_PATTERN.matcher(text);
-        while (matcher.find()) {
-            int start = element.getTextRange().getStartOffset() + matcher.start(1);
-            int end = element.getTextRange().getStartOffset() + matcher.end(1);
+        // Подсвечиваем аннотации
+        Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(text);
+        while (annotationMatcher.find()) {
+            int start = element.getTextRange().getStartOffset() + annotationMatcher.start(1);
+            int end = element.getTextRange().getStartOffset() + annotationMatcher.end(1);
 
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                     .range(new TextRange(start, end))
                     .textAttributes(DefaultLanguageHighlighterColors.METADATA)
+                    .create();
+        }
+
+        // Подсвечиваем параметры
+        Matcher parameterMatcher = PARAMETER_PATTERN.matcher(text);
+        while (parameterMatcher.find()) {
+            int start = element.getTextRange().getStartOffset() + parameterMatcher.start();
+            int end = element.getTextRange().getStartOffset() + parameterMatcher.end();
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(new TextRange(start, end))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_METHOD)
                     .create();
         }
     }

@@ -1,4 +1,4 @@
 package com.binzaru.swaggerplugin.validation;
 
-public class AliasAnnotator {
+public class AliasValidator {
 }
