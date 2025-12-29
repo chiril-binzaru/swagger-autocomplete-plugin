@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.Set;
 
 public class SwaggerParser {
-    private Map<String, SwaggerModel> models = new LinkedHashMap<>();
+    private final Map<String, SwaggerModel> models = new LinkedHashMap<>();
 
     public void loadSwagger(String filePath) throws Exception {
         this.models.clear();

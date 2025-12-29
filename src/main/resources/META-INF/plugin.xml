@@ -29,5 +29,8 @@
         <annotator
                 language="TEXT"
                 implementationClass="com.binzaru.swaggerplugin.validation.SwaggerPathValidator"/>
+
+        <typedHandler
+                implementation="com.binzaru.swaggerplugin.completion.SqlCompletionAutoPopup"/>
     </extensions>
 </idea-plugin>
