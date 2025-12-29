@@ -24,6 +24,10 @@
 
         <annotator
                 language="TEXT"
-                implementationClass="com.binzaru.swaggerplugin.validation.SwaggerPathAnnotator"/>
+                implementationClass="com.binzaru.swaggerplugin.validation.ModelNameValidator"/>
+
+        <annotator
+                language="TEXT"
+                implementationClass="com.binzaru.swaggerplugin.validation.SwaggerPathValidator"/>
     </extensions>
 </idea-plugin>

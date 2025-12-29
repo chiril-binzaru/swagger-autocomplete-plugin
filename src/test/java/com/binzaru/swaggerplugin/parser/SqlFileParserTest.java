@@ -91,20 +91,52 @@ public class SqlFileParserTest {
     private static Stream<Arguments> provideExtractAliasPathTestData() {
         return Stream.of(
                 Arguments.of(
-                        "SELECT u.id AS \"address.",
-                        new String[]{"address", ""}
+                        "SELECT u.id AS \"",
+                        new String[]{""}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS \"c",
+                        new String[]{"c"}
                 ),
                 Arguments.of(
                         "SELECT u.id AS \"customerId",
                         new String[]{"customerId"}
                 ),
                 Arguments.of(
-                        "SELECT u.id AS address.city",
-                        new String[]{"address", "city"}
+                        "SELECT u.id AS \"address.",
+                        new String[]{"address", ""}
                 ),
                 Arguments.of(
                         "SELECT u.id AS \"loyaltyProgramMembership.membershipTierLevel",
                         new String[]{"loyaltyProgramMembership", "membershipTierLevel"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS \"loyaltyProgramMembership.membershipTierLevel.",
+                        new String[]{"loyaltyProgramMembership", "membershipTierLevel", ""}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS ",
+                        new String[]{""}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS c",
+                        new String[]{"c"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS customerId",
+                        new String[]{"customerId"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS address.",
+                        new String[]{"address", ""}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS loyaltyProgramMembership.membershipTierLevel",
+                        new String[]{"loyaltyProgramMembership", "membershipTierLevel"}
+                ),
+                Arguments.of(
+                        "SELECT u.id AS loyaltyProgramMembership.membershipTierLevel.",
+                        new String[]{"loyaltyProgramMembership", "membershipTierLevel", ""}
                 ),
                 Arguments.of(
                         "SELECT u.id",

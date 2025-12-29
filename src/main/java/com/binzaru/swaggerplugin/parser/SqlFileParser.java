@@ -43,14 +43,30 @@ public class SqlFileParser {
 
     public static String[] extractAliasPath(String textBeforeCursor) {
         Pattern pattern = Pattern.compile(
-                "\\bAS\\s+[\"']?([\\w.]+)$",
+                "\\bAS\\s+[\"']?([\\w.]*)$",
                 Pattern.CASE_INSENSITIVE
         );
 
         Matcher matcher = pattern.matcher(textBeforeCursor);
         if (matcher.find()) {
             String alias = matcher.group(1);
-            return alias.split("\\.");
+
+            // Если алиас пустой (AS " или AS )
+            if (alias.isEmpty()) {
+                return new String[]{""};
+            }
+
+            String[] parts = alias.split("\\.");
+
+            // Если заканчивается точкой, добавляем пустую строку
+            if (alias.endsWith(".")) {
+                String[] result = new String[parts.length + 1];
+                System.arraycopy(parts, 0, result, 0, parts.length);
+                result[parts.length] = "";
+                return result;
+            }
+
+            return parts;
         }
 
         return new String[0];
