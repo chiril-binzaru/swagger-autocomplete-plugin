@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij.platform' version '2.2.1'
+    id 'org.jetbrains.intellij.platform' version '2.10.5'
 }
 
 group = 'com.binzaru'
@@ -47,5 +47,10 @@ tasks {
     test {
         dependsOn -= prepareTest
         classpath = sourceSets.test.runtimeClasspath
+
+        // Полностью изолируем тесты от IntelliJ Platform (несовместимы с Java 21)
+        jvmArgumentProviders.clear()
+        systemProperties.clear()
+        jvmArgs = []
     }
 }
