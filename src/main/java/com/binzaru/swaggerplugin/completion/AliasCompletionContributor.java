@@ -13,6 +13,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.io.File;
 
 public class AliasCompletionContributor extends CompletionContributor {
 
@@ -42,15 +43,18 @@ public class AliasCompletionContributor extends CompletionContributor {
 
                         // Загружаем Swagger если еще не загружен
                         String swaggerPath = SqlFileParser.extractSwaggerPath(file.getText());
+                        if (swaggerPath == null) {
+                            return;
+                        }
 
                         if (!parser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
-                            if (swaggerPath != null) {
-                                try {
-                                    parser.loadSwagger(swaggerPath);
-                                    lastLoadedSwaggerPath = swaggerPath;
-                                } catch (Exception e) {
-                                    return;
-                                }
+                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
+
+                            try {
+                                parser.loadSwagger(swaggerFile.getAbsolutePath());
+                                lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
+                            } catch (Exception e) {
+                                return;
                             }
                         }
 

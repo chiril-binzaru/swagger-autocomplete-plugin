@@ -1,5 +1,8 @@
 package com.binzaru.swaggerplugin.parser;
 
+import com.intellij.openapi.vfs.VirtualFile;
+import java.io.File;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,5 +73,17 @@ public class SqlFileParser {
         }
 
         return new String[0];
+    }
+
+    public static File resolveSwaggerPath(String swaggerPath, VirtualFile currentFile) {
+        if (new File(swaggerPath).isAbsolute()) {
+            return new File(swaggerPath);
+        } else {
+            if (currentFile != null) {
+                VirtualFile dir = currentFile.getParent();
+                return new File(dir.getPath(), swaggerPath);
+            }
+            return new File(swaggerPath);
+        }
     }
 }

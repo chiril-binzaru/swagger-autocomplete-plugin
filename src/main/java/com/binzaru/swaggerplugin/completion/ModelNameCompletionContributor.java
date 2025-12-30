@@ -9,6 +9,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class ModelNameCompletionContributor extends CompletionContributor {
     private final SwaggerParser parser = new SwaggerParser();
     private String lastLoadedSwaggerPath = null;
@@ -37,9 +39,11 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                         }
 
                         if (!parser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
+                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
+
                             try {
-                                parser.loadSwagger(swaggerPath);
-                                lastLoadedSwaggerPath = swaggerPath;
+                                parser.loadSwagger(swaggerFile.getAbsolutePath());
+                                lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
                             } catch (Exception e) {
                                 return;
                             }

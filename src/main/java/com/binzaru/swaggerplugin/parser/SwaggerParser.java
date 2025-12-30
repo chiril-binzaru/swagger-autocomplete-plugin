@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Set;
 public class SwaggerParser {
     private final Map<String, SwaggerModel> models = new LinkedHashMap<>();
 
-    public void loadSwagger(String filePath) throws Exception {
+    public void loadSwagger(String filePath) throws FileNotFoundException {
         this.models.clear();
 
         Gson gson = new Gson();

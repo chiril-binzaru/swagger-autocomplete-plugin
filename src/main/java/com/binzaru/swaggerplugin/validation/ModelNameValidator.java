@@ -51,18 +51,10 @@ public class ModelNameValidator implements Annotator {
         }
 
         // Резолвим путь
-        File swaggerFile;
-        if (new File(swaggerPath).isAbsolute()) {
-            swaggerFile = new File(swaggerPath);
-        } else {
-            VirtualFile currentFile = element.getContainingFile().getVirtualFile();
-            if (currentFile != null) {
-                VirtualFile dir = currentFile.getParent();
-                swaggerFile = new File(dir.getPath(), swaggerPath);
-            } else {
-                swaggerFile = new File(swaggerPath);
-            }
-        }
+        File swaggerFile = SqlFileParser.resolveSwaggerPath(
+                swaggerPath,
+                element.getContainingFile().getVirtualFile()
+        );
 
         if (!swaggerFile.exists()) {
             return; // Swagger не найден - не валидируем модель
