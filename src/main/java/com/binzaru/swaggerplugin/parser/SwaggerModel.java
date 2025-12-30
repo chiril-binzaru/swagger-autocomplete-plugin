@@ -33,9 +33,9 @@ public class SwaggerModel {
     }
 
     public static class PropertyInfo {
-        private String type;
-        private String description;
-        private String ref;
+        private final String type;
+        private final String description;
+        private final String ref;
 
         public PropertyInfo(String type, String description, String ref) {
             this.type = type;
