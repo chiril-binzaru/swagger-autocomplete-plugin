@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SwaggerModel {
-    private String name;
-    private Map<String, PropertyInfo> properties;
+    private final String name;
+    private final Map<String, PropertyInfo> properties;
 
     public SwaggerModel(String name) {
         this.name = name;
