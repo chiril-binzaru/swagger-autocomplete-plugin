@@ -1,5 +1,6 @@
 package com.binzaru.swaggerplugin.validation;
 
+import com.binzaru.swaggerplugin.parser.SqlFileParser;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -42,19 +43,8 @@ public class SwaggerPathValidator implements Annotator {
             TextRange range = new TextRange(start, end);
 
             // Резолвим путь относительно текущего файла
-            File swaggerFile;
-            if (new File(path).isAbsolute()) {
-                swaggerFile = new File(path);
-            } else {
-                // Относительный путь - резолвим от директории текущего файла
-                VirtualFile currentFile = element.getContainingFile().getVirtualFile();
-                if (currentFile != null) {
-                    VirtualFile dir = currentFile.getParent();
-                    swaggerFile = new File(dir.getPath(), path);
-                } else {
-                    swaggerFile = new File(path);
-                }
-            }
+            VirtualFile currentFile = element.getContainingFile().getVirtualFile();
+            File swaggerFile = SqlFileParser.resolveSwaggerPath(path, currentFile);
 
             if (swaggerFile.exists() && swaggerFile.isFile()) {
                 holder.newSilentAnnotation(HighlightSeverity.INFORMATION)

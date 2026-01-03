@@ -1,35 +1,68 @@
 package com.binzaru.swaggerplugin.parser;
 
+import java.io.File;
 import java.util.stream.Stream;
 import java.io.InputStream;
 
+import com.intellij.openapi.vfs.VirtualFile;
+
+import org.junit.jupiter.api.Named;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class SqlFileParserTest {
 
     @ParameterizedTest
     @MethodSource("provideExtractModelNameTestData")
-    public void testExtractModelName(String sql, String expectedModelName) {
+    public void extractModelNameTest(String sql, String expectedModelName) {
         String actualModelName = SqlFileParser.extractModelName(sql);
         assertEquals(expectedModelName, actualModelName);
     }
 
     @ParameterizedTest
     @MethodSource("provideExtractSwaggerPathTestData")
-    public void testExtractSwaggerPath(String sql, String expectedSwaggerPath) {
+    public void extractSwaggerPathTest(String sql, String expectedSwaggerPath) {
         String actualSwaggerPath = SqlFileParser.extractSwaggerPath(sql);
         assertEquals(expectedSwaggerPath, actualSwaggerPath);
     }
 
     @ParameterizedTest
     @MethodSource("provideExtractAliasPathTestData")
-    public void testExtractAliasPath(String textBeforeCursor, String[] expectedAliasPath) {
+    public void extractAliasPathTest(String textBeforeCursor, String[] expectedAliasPath) {
         String[] actualAliasPath = SqlFileParser.extractAliasPath(textBeforeCursor);
         assertArrayEquals(expectedAliasPath, actualAliasPath);
+    }
+
+    @Tag("intellij-platform")
+    @ParameterizedTest
+    @MethodSource("provideResolveRelativeSwaggerPathTestData")
+    public void resolveRelativeSwaggerPathTest(String swaggerPath, String expectedPath) {
+        // Мокируем VirtualFile
+        VirtualFile mockCurrentFile = mock(VirtualFile.class);
+        VirtualFile mockParentDir = mock(VirtualFile.class);
+
+        when(mockCurrentFile.getParent()).thenReturn(mockParentDir);
+        when(mockParentDir.getPath()).thenReturn("C:/project/queries");
+
+        File result = SqlFileParser.resolveSwaggerPath(swaggerPath, mockCurrentFile);
+
+        assertEquals(expectedPath, result.getAbsolutePath());
+    }
+
+    @Tag("intellij-platform")
+    @ParameterizedTest
+    @MethodSource("provideResolveAbsoluteSwaggerPathTestData")
+    void resolveAbsoluteSwaggerPathTest(String swaggerPath, String expectedPath) {
+        VirtualFile mockCurrentFile = mock(VirtualFile.class);
+        File result = SqlFileParser.resolveSwaggerPath(swaggerPath, mockCurrentFile);
+
+        assertEquals(expectedPath, result.getAbsolutePath());
     }
 
 
@@ -141,6 +174,54 @@ public class SqlFileParserTest {
                 Arguments.of(
                         "SELECT u.id",
                         new String[0]
+                )
+        );
+    }
+
+    private static Stream<Arguments> provideResolveRelativeSwaggerPathTestData() {
+        return Stream.of(
+                Arguments.argumentSet("Current directory",
+                        "swagger.json",
+                        "C:\\project\\queries\\swagger.json"
+                ),
+
+                Arguments.argumentSet("Current directory marker '.' (/ separator)",
+                        "./swagger.json",
+                        "C:\\project\\queries\\swagger.json"
+                ),
+                Arguments.argumentSet("Nested directory (/ separator)",
+                        "folder/swagger.json",
+                        "C:\\project\\queries\\folder\\swagger.json"
+                ),
+                Arguments.argumentSet("Parent directory marker '..' (/ separator)",
+                        "../swagger.json",
+                        "C:\\project\\swagger.json"
+                ),
+
+                Arguments.argumentSet("Current directory marker '.' (\\ separator)",
+                        ".\\swagger.json",
+                        "C:\\project\\queries\\swagger.json"
+                ),
+                Arguments.argumentSet("Nested directory (\\ separator)",
+                        "folder\\swagger.json",
+                        "C:\\project\\queries\\folder\\swagger.json"
+                ),
+                Arguments.argumentSet("Parent directory marker '..' (\\ separator)",
+                        "..\\swagger.json",
+                        "C:\\project\\swagger.json"
+                )
+        );
+    }
+
+    private static Stream<Arguments> provideResolveAbsoluteSwaggerPathTestData() {
+        return Stream.of(
+                Arguments.argumentSet("Valid absolute path",
+                        "D:/User/Documents/swagger.json",
+                        "D:\\User\\Documents\\swagger.json"
+                ),
+                Arguments.argumentSet("Valid absolute path",
+                        "D:\\User\\Documents\\swagger.json",
+                        "D:\\User\\Documents\\swagger.json"
                 )
         );
     }

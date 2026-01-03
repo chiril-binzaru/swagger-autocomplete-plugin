@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SqlFileParser {
 
     private static final int HEADER_LINES_TO_SCAN = 20;
@@ -16,7 +18,7 @@ public class SqlFileParser {
     );
 
     private static final Pattern SWAGGER_PATTERN = Pattern.compile(
-            "--\\s*@swagger:\\s*([^\\s]+)",
+            "--\\s*@swagger:\\s*(\\S+)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -75,15 +77,26 @@ public class SqlFileParser {
         return new String[0];
     }
 
-    public static File resolveSwaggerPath(String swaggerPath, VirtualFile currentFile) {
-        if (new File(swaggerPath).isAbsolute()) {
-            return new File(swaggerPath);
+    /**
+     * Resolves a Swagger file path to an absolute File object.
+     * <p>
+     * If the provided path is absolute, it is returned as-is.
+     * If the path is relative, it is resolved against the parent directory of the current file.
+     *
+     * @param swaggerPath the Swagger file path extracted from @swagger annotation via {@link #extractSwaggerPath(String)} (can be absolute or relative)
+     * @param currentFile the current .sql file as VirtualFile (required; used to resolve relative paths)
+     * @return a File object representing the absolute path to the Swagger file
+     * @throws NullPointerException if currentFile is null
+     */
+    public static File resolveSwaggerPath(String swaggerPath, @NotNull VirtualFile currentFile) {
+        File file;
+        if (!new File(swaggerPath).isAbsolute()) {
+            VirtualFile dir = currentFile.getParent();
+            file = new File(dir.getPath(), swaggerPath);
         } else {
-            if (currentFile != null) {
-                VirtualFile dir = currentFile.getParent();
-                return new File(dir.getPath(), swaggerPath);
-            }
-            return new File(swaggerPath);
+            file = new File(swaggerPath);
         }
+
+        return file.toPath().normalize().toFile();
     }
 }
