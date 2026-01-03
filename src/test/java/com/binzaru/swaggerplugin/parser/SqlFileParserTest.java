@@ -182,33 +182,33 @@ public class SqlFileParserTest {
         return Stream.of(
                 Arguments.argumentSet("Current directory",
                         "swagger.json",
-                        "C:\\project\\queries\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "queries" + File.separator + "swagger.json"
                 ),
 
                 Arguments.argumentSet("Current directory marker '.' (/ separator)",
                         "./swagger.json",
-                        "C:\\project\\queries\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "queries" + File.separator + "swagger.json"
                 ),
                 Arguments.argumentSet("Nested directory (/ separator)",
                         "folder/swagger.json",
-                        "C:\\project\\queries\\folder\\swagger.json"
+                        "C:" + File.separator + "project\\queries" + File.separator + "folder" + File.separator + "swagger.json"
                 ),
                 Arguments.argumentSet("Parent directory marker '..' (/ separator)",
                         "../swagger.json",
-                        "C:\\project\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "swagger.json"
                 ),
 
                 Arguments.argumentSet("Current directory marker '.' (\\ separator)",
                         ".\\swagger.json",
-                        "C:\\project\\queries\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "queries" + File.separator + "swagger.json"
                 ),
                 Arguments.argumentSet("Nested directory (\\ separator)",
                         "folder\\swagger.json",
-                        "C:\\project\\queries\\folder\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "queries" + File.separator + "folder" + File.separator + "swagger.json"
                 ),
                 Arguments.argumentSet("Parent directory marker '..' (\\ separator)",
                         "..\\swagger.json",
-                        "C:\\project\\swagger.json"
+                        "C:" + File.separator + "project" + File.separator + "swagger.json"
                 )
         );
     }
@@ -217,11 +217,11 @@ public class SqlFileParserTest {
         return Stream.of(
                 Arguments.argumentSet("Valid absolute path",
                         "D:/User/Documents/swagger.json",
-                        "D:\\User\\Documents\\swagger.json"
+                        "D:" + File.separator + "User" + File.separator + "Documents" + File.separator + "swagger.json"
                 ),
                 Arguments.argumentSet("Valid absolute path",
                         "D:\\User\\Documents\\swagger.json",
-                        "D:\\User\\Documents\\swagger.json"
+                        "D:" + File.separator + "User" + File.separator + "Documents" + File.separator + "swagger.json"
                 )
         );
     }
