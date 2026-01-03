@@ -1,19 +1,265 @@
 {
   "openapi": "3.0.0",
+  "info": {
+    "title": "Complex API",
+    "version": "1.0.0"
+  },
+  "paths": {},
   "components": {
     "schemas": {
-      "User": {
+      "CustomerProfile": {
         "type": "object",
         "properties": {
-          "id": {"type": "integer"},
-          "name": {"type": "string"}
+          "customerId": {
+            "type": "integer",
+            "description": "Unique customer identifier"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Customer first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Customer last name"
+          },
+          "emailAddress": {
+            "type": "string",
+            "description": "Primary email address"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "registrationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accountStatus": {
+            "type": "string",
+            "enum": ["active", "suspended", "closed"]
+          },
+          "loyaltyProgramMembership": {
+            "$ref": "#/components/schemas/LoyaltyMembership"
+          },
+          "primaryShippingAddress": {
+            "$ref": "#/components/schemas/ShippingAddress"
+          },
+          "billingInformation": {
+            "$ref": "#/components/schemas/BillingDetails"
+          },
+          "orderHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderSummary"
+            }
+          },
+          "preferredPaymentMethods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentMethod"
+            }
+          }
+        }
+      },
+      "LoyaltyMembership": {
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "type": "integer"
+          },
+          "membershipTierLevel": {
+            "type": "string",
+            "description": "bronze, silver, gold, platinum"
+          },
+          "totalPointsAccumulated": {
+            "type": "integer"
+          },
+          "availablePointsBalance": {
+            "type": "integer"
+          },
+          "memberSinceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "nextTierRequiredPoints": {
+            "type": "integer"
+          },
+          "specialBenefitsAndRewards": {
+            "$ref": "#/components/schemas/MemberBenefits"
+          }
+        }
+      },
+      "MemberBenefits": {
+        "type": "object",
+        "properties": {
+          "freeShippingEligibility": {
+            "type": "boolean"
+          },
+          "exclusiveDiscountPercentage": {
+            "type": "number",
+            "format": "float"
+          },
+          "earlyAccessToSalesEvents": {
+            "type": "boolean"
+          },
+          "dedicatedCustomerSupportLine": {
+            "type": "string"
+          }
+        }
+      },
+      "ShippingAddress": {
+        "type": "object",
+        "properties": {
+          "addressId": {
+            "type": "integer"
+          },
+          "recipientFullName": {
+            "type": "string"
+          },
+          "streetAddressLineOne": {
+            "type": "string"
+          },
+          "streetAddressLineTwo": {
+            "type": "string"
+          },
+          "cityName": {
+            "type": "string"
+          },
+          "stateOrProvinceName": {
+            "type": "string"
+          },
+          "postalOrZipCode": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "addressType": {
+            "type": "string",
+            "description": "residential, commercial, po_box"
+          },
+          "deliveryInstructions": {
+            "type": "string"
+          },
+          "geographicCoordinates": {
+            "$ref": "#/components/schemas/GeoLocation"
+          }
+        }
+      },
+      "GeoLocation": {
+        "type": "object",
+        "properties": {
+          "latitudeDecimalDegrees": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitudeDecimalDegrees": {
+            "type": "number",
+            "format": "double"
+          },
+          "elevationInMeters": {
+            "type": "number"
+          }
+        }
+      },
+      "BillingDetails": {
+        "type": "object",
+        "properties": {
+          "billingAddressId": {
+            "type": "integer"
+          },
+          "invoiceEmailAddress": {
+            "type": "string"
+          },
+          "taxIdentificationNumber": {
+            "type": "string"
+          },
+          "preferredInvoiceFormat": {
+            "type": "string",
+            "enum": ["pdf", "html", "xml"]
+          },
+          "billingAddress": {
+            "$ref": "#/components/schemas/ShippingAddress"
+          }
+        }
+      },
+      "OrderSummary": {
+        "type": "object",
+        "properties": {
+          "orderReferenceNumber": {
+            "type": "string"
+          },
+          "orderPlacementDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalOrderAmountInCents": {
+            "type": "integer"
+          },
+          "orderStatusDescription": {
+            "type": "string"
+          },
+          "estimatedDeliveryDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "trackingInformation": {
+            "$ref": "#/components/schemas/ShipmentTracking"
+          }
+        }
+      },
+      "ShipmentTracking": {
+        "type": "object",
+        "properties": {
+          "trackingNumberIdentifier": {
+            "type": "string"
+          },
+          "carrierServiceProvider": {
+            "type": "string"
+          },
+          "currentShipmentStatus": {
+            "type": "string"
+          },
+          "lastKnownLocationCity": {
+            "type": "string"
+          },
+          "expectedDeliveryDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaymentMethod": {
+        "type": "object",
+        "properties": {
+          "paymentMethodId": {
+            "type": "integer"
+          },
+          "paymentMethodType": {
+            "type": "string",
+            "description": "credit_card, debit_card, bank_account, digital_wallet"
+          },
+          "maskedAccountNumber": {
+            "type": "string"
+          },
+          "cardholderFullName": {
+            "type": "string"
+          },
+          "expirationMonthYear": {
+            "type": "string"
+          },
+          "isDefaultPaymentMethod": {
+            "type": "boolean"
+          },
+          "billingAddressAssociated": {
+            "$ref": "#/components/schemas/ShippingAddress"
+          }
         }
       }
     }
-  },
-  "info": {
-    "title": "",
-    "version": ""
-  },
-  "paths": {}
+  }
 }

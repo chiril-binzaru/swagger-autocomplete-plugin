@@ -38,6 +38,14 @@ public class SwaggerParser {
         }
     }
 
+    /**
+     * Extracts the schemas section from a Swagger/OpenAPI JSON object.
+     * <p>
+     * Supports both OpenAPI 3.0 format (components/schemas) and Swagger 2.0 format (definitions).
+     *
+     * @param swagger the root Swagger/OpenAPI JSON object
+     * @return JsonObject containing the schemas, or null if no schemas section found
+     */
     private JsonObject extractSchemas(JsonObject swagger) {
         // OpenAPI 3.0
         if (swagger.has("components") && swagger.getAsJsonObject("components").has("schemas")) {
@@ -73,12 +81,21 @@ public class SwaggerParser {
                 }
             }
 
-            models.put(modelName.toLowerCase(), model);
+            models.put(modelName, model);
         }
     }
 
-    public SwaggerModel getModel(String name) {
-        return models.get(name.toLowerCase());
+    /**
+     * Retrieves a Swagger model by its name.
+     * <p>
+     * Model names are case-sensitive and must match exactly as defined in the Swagger schema.
+     *
+     * @param modelName the exact name of the model to retrieve (case-sensitive);
+     *                  typically the output of the {@link SqlFileParser#extractModelName(String)} method is passed to this parameter
+     * @return the SwaggerModel object if found, or null if no model exists with the given name
+     */
+    public SwaggerModel getModel(String modelName) {
+        return models.get(modelName);
     }
 
     public SwaggerModel resolveRef(String ref) {
