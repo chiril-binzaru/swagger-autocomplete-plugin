@@ -14,11 +14,23 @@ import java.util.Set;
 public class SwaggerParser {
     private final Map<String, SwaggerModel> models = new LinkedHashMap<>();
 
-    public void loadSwagger(String filePath) throws FileNotFoundException {
+    /**
+     * Loads and parses a Swagger/OpenAPI schema file into memory.
+     * <p>
+     * Clears any previously loaded models and populates the internal model registry
+     * from the schemas defined in the Swagger file.
+     * <p>
+     * Supports both OpenAPI 3.0 (components/schemas) and Swagger 2.0 (definitions) formats.
+     *
+     * @param absoluteSwaggerPath the absolute Swagger file path, typically resolved via
+     *                    {@link SqlFileParser#resolveSwaggerPath(String, com.intellij.openapi.vfs.VirtualFile)}
+     * @throws FileNotFoundException if the Swagger file does not exist at the specified path
+     */
+    public void loadSwagger(String absoluteSwaggerPath) throws FileNotFoundException {
         this.models.clear();
 
         Gson gson = new Gson();
-        JsonObject swagger = gson.fromJson(new FileReader(filePath), JsonObject.class);
+        JsonObject swagger = gson.fromJson(new FileReader(absoluteSwaggerPath), JsonObject.class);
 
         JsonObject schemas = extractSchemas(swagger);
         if (schemas != null) {

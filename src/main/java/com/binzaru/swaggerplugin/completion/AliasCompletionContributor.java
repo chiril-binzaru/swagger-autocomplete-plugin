@@ -12,6 +12,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.io.File;
 
@@ -21,14 +22,14 @@ public class AliasCompletionContributor extends CompletionContributor {
      * Parser that loads and stores Swagger/OpenAPI schema models from .json file.
      * Holds parsed model structures in memory for autocomplete suggestions.
      */
-    private final SwaggerParser parser = new SwaggerParser();
+    private final SwaggerParser swaggerParser = new SwaggerParser();
 
     private String lastLoadedSwaggerPath = null;
 
     public AliasCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider<>() {
                     @Override
                     protected void addCompletions(@NotNull CompletionParameters parameters,
                                                   @NotNull ProcessingContext context,
@@ -39,34 +40,34 @@ public class AliasCompletionContributor extends CompletionContributor {
                             It is a logical, hierarchical representation of a source file in IntelliJ IDEA,
                             exposing its structure and semantics rather than just its raw text.
                         */
-                        PsiFile file = parameters.getOriginalFile();
+                        PsiFile psiFile = parameters.getOriginalFile();
 
                         // Загружаем Swagger если еще не загружен
-                        String swaggerPath = SqlFileParser.extractSwaggerPath(file.getText());
+                        String swaggerPath = SqlFileParser.extractSwaggerPath(psiFile.getText());
                         if (swaggerPath == null) {
                             return;
                         }
 
-                        if (!parser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
-                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
+                        if (!swaggerParser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
+                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, psiFile.getVirtualFile());
 
                             try {
-                                parser.loadSwagger(swaggerFile.getAbsolutePath());
+                                swaggerParser.loadSwagger(swaggerFile.getAbsolutePath());
                                 lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
-                            } catch (Exception e) {
+                            } catch (FileNotFoundException e) {
                                 return;
                             }
                         }
 
                         // Получаем модель из @model
-                        String modelName = SqlFileParser.extractModelName(file.getText());
+                        String modelName = SqlFileParser.extractModelName(psiFile.getText());
                         if (modelName == null) return;
 
-                        SwaggerModel rootModel = parser.getModel(modelName);
+                        SwaggerModel rootModel = swaggerParser.getModel(modelName);
                         if (rootModel == null) return;
 
                         // Получаем текст до курсора
-                        Document document = FileDocumentManager.getInstance().getDocument(file.getVirtualFile());
+                        Document document = FileDocumentManager.getInstance().getDocument(psiFile.getVirtualFile());
                         if (document == null) return;
 
                         int offset = parameters.getOffset();
@@ -99,7 +100,7 @@ public class AliasCompletionContributor extends CompletionContributor {
                             for (int i = 0; i < aliasPath.length - 1; i++) {
                                 SwaggerModel.PropertyInfo prop = targetModel.getProperty(aliasPath[i]);
                                 if (prop != null && prop.isReference()) {
-                                    targetModel = parser.resolveRef(prop.getRef());
+                                    targetModel = swaggerParser.resolveRef(prop.getRef());
                                     if (targetModel == null) return;
                                 } else if (prop == null) {
                                     return;  // Поле не найдено - выходим
@@ -117,7 +118,7 @@ public class AliasCompletionContributor extends CompletionContributor {
                             if (info.getType() != null) {
                                 element = element.withTypeText(info.getType());
                             } else if (info.isReference()) {
-                                SwaggerModel refModel = parser.resolveRef(info.getRef());
+                                SwaggerModel refModel = swaggerParser.resolveRef(info.getRef());
                                 if (refModel != null) {
                                     element = element.withTypeText(refModel.getName());
                                 }

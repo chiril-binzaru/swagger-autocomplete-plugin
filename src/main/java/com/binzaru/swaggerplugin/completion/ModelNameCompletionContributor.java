@@ -10,6 +10,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class ModelNameCompletionContributor extends CompletionContributor {
     private final SwaggerParser parser = new SwaggerParser();
@@ -18,7 +19,7 @@ public class ModelNameCompletionContributor extends CompletionContributor {
     public ModelNameCompletionContributor() {
         extend(CompletionType.BASIC,
                 PlatformPatterns.psiElement(),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider<>() {
                     @Override
                     protected void addCompletions(@NotNull CompletionParameters parameters,
                                                   @NotNull ProcessingContext context,
@@ -44,7 +45,7 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                             try {
                                 parser.loadSwagger(swaggerFile.getAbsolutePath());
                                 lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
-                            } catch (Exception e) {
+                            } catch (FileNotFoundException e) {
                                 return;
                             }
                         }
