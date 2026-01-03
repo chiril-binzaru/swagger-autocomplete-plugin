@@ -2,6 +2,7 @@ package com.binzaru.swaggerplugin.parser;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SwaggerModel {
     private final String name;
@@ -57,6 +58,21 @@ public class SwaggerModel {
 
         public boolean isReference() {
             return ref != null && !ref.isEmpty();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PropertyInfo that = (PropertyInfo) o;
+            return Objects.equals(type, that.type) &&
+                    Objects.equals(description, that.description) &&
+                    Objects.equals(ref, that.ref);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, description, ref);
         }
     }
 }

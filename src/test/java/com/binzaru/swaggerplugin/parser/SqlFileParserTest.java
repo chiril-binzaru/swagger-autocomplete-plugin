@@ -25,6 +25,7 @@ public class SqlFileParserTest {
         assertEquals(expectedModelName, actualModelName);
     }
 
+
     @ParameterizedTest
     @MethodSource("provideExtractSwaggerPathTestData")
     public void extractSwaggerPathTest(String sql, String expectedSwaggerPath) {
@@ -32,12 +33,14 @@ public class SqlFileParserTest {
         assertEquals(expectedSwaggerPath, actualSwaggerPath);
     }
 
+
     @ParameterizedTest
     @MethodSource("provideExtractAliasPathTestData")
     public void extractAliasPathTest(String textBeforeCursor, String[] expectedAliasPath) {
         String[] actualAliasPath = SqlFileParser.extractAliasPath(textBeforeCursor);
         assertArrayEquals(expectedAliasPath, actualAliasPath);
     }
+
 
     @Tag("intellij-platform")
     @ParameterizedTest
@@ -92,6 +95,7 @@ public class SqlFileParserTest {
         );
     }
 
+
     private static Stream<Arguments> provideExtractSwaggerPathTestData() {
         return Stream.of(
                 Arguments.of(
@@ -120,6 +124,7 @@ public class SqlFileParserTest {
                 )
         );
     }
+
 
     private static Stream<Arguments> provideExtractAliasPathTestData() {
         return Stream.of(
@@ -177,6 +182,7 @@ public class SqlFileParserTest {
                 )
         );
     }
+
 
     private static Stream<Arguments> provideResolveRelativeSwaggerPathTestData() {
         return Stream.of(
