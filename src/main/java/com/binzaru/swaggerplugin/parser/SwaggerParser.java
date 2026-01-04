@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.Set;
 
 public class SwaggerParser {
@@ -59,6 +59,14 @@ public class SwaggerParser {
         return null;
     }
 
+    /**
+     * Parses the schemas section of a Swagger JSON object and populates the internal model registry.
+     * <p>
+     * For each schema, creates a SwaggerModel and extracts all properties including their types,
+     * descriptions, and $ref references to other schemas.
+     *
+     * @param schemas the "schemas" or "definitions" JsonObject from the Swagger file
+     */
     private void parseSchemas(JsonObject schemas) {
         for (Map.Entry<String, JsonElement> entry : schemas.entrySet()) {
             String modelName = entry.getKey();
@@ -113,13 +121,23 @@ public class SwaggerParser {
         return getModel(modelName);
     }
 
+    /**
+     * Checks whether a Swagger schema has been successfully loaded into memory.
+     *
+     * @return true if at least one model has been loaded, false otherwise
+     */
     public boolean isLoaded() {
         return !models.isEmpty();
     }
 
+    /**
+     * Returns all model names defined in the loaded Swagger schema.
+     * <p>
+     * The returned set maintains insertion order (the order models appear in the Swagger file).
+     *
+     * @return a new LinkedHashSet containing all model names, or an empty set if no Swagger is loaded
+     */
     public Set<String> getAllModelNames() {
-        return models.keySet().stream()
-                .map(name -> models.get(name).getName())
-                .collect(Collectors.toSet());
+        return new LinkedHashSet<>(models.keySet());
     }
 }
