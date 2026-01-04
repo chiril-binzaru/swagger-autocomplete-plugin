@@ -3,6 +3,7 @@ package com.binzaru.swaggerplugin.parser;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -90,15 +91,22 @@ public class SwaggerParser {
      * <p>
      * Model names are case-sensitive and must match exactly as defined in the Swagger schema.
      *
-     * @param modelName the exact name of the model to retrieve (case-sensitive);
-     *                  typically the output of the {@link SqlFileParser#extractModelName(String)} method is passed to this parameter
+     * @param modelName the exact name of the model to retrieve (case-sensitive).
+     *                  Typically obtained via {@link SqlFileParser#extractModelName(String)}
+     *                  or {@link #resolveRef(String)}
      * @return the SwaggerModel object if found, or null if no model exists with the given name
      */
-    public SwaggerModel getModel(String modelName) {
+    public SwaggerModel getModel(@NotNull String modelName) {
         return models.get(modelName);
     }
 
-    public SwaggerModel resolveRef(String ref) {
+    /**
+     * Resolves a Swagger $ref string to the corresponding model.
+     *
+     * @param ref the $ref string in format "#/components/schemas/ModelName"
+     * @return the SwaggerModel object if found, or null if no model exists with the given name
+     */
+    public SwaggerModel resolveRef(@NotNull String ref) {
         // $ref format: "#/components/schemas/AddressDetails"
         String[] parts = ref.split("/");
         String modelName = parts[parts.length - 1];
