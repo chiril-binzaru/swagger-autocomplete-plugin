@@ -2,6 +2,7 @@ package com.binzaru.swaggerplugin.completion;
 
 import com.binzaru.swaggerplugin.parser.SqlFileParser;
 import com.binzaru.swaggerplugin.parser.SwaggerParser;
+import com.binzaru.swaggerplugin.patterns.Patterns;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
@@ -40,7 +41,7 @@ public class ModelNameCompletionContributor extends CompletionContributor {
 
                         // Проверяем что мы в строке с @model:
                         String lineText = getLineText(parameters);
-                        if (!lineText.matches(".*--\\s*@model:\\s*\\w*$")) {
+                        if (!Patterns.MODEL_COMPLETION_TRIGGER.matcher(lineText).matches()) {
                             return;
                         }
 

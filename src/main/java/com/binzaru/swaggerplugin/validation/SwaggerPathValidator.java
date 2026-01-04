@@ -1,6 +1,7 @@
 package com.binzaru.swaggerplugin.validation;
 
 import com.binzaru.swaggerplugin.parser.SqlFileParser;
+import com.binzaru.swaggerplugin.patterns.Patterns;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -12,13 +13,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SwaggerPathValidator implements Annotator {
-    private static final Pattern SWAGGER_PATTERN = Pattern.compile(
-            "--\\s*@swagger:\\s*([^\\s]+)",
-            Pattern.CASE_INSENSITIVE
-    );
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -34,7 +30,7 @@ public class SwaggerPathValidator implements Annotator {
             return;
         }
 
-        Matcher matcher = SWAGGER_PATTERN.matcher(text);
+        Matcher matcher = Patterns.SWAGGER_ANNOTATION.matcher(text);
 
         if (matcher.find()) {
             String path = matcher.group(1);

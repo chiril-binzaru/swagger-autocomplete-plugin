@@ -1,5 +1,6 @@
 package com.binzaru.swaggerplugin.parser;
 
+import com.binzaru.swaggerplugin.patterns.Patterns;
 import com.intellij.openapi.vfs.VirtualFile;
 import java.io.File;
 
@@ -12,22 +13,12 @@ public class SqlFileParser {
 
     private static final int HEADER_LINES_TO_SCAN = 20;
 
-    private static final Pattern MODEL_PATTERN = Pattern.compile(
-            "--\\s*@model:\\s*(\\w+)",
-            Pattern.CASE_INSENSITIVE
-    );
-
-    private static final Pattern SWAGGER_PATTERN = Pattern.compile(
-            "--\\s*@swagger:\\s*(\\S+)",
-            Pattern.CASE_INSENSITIVE
-    );
-
     public static String extractModelName(String text) {
         String[] lines = text.split("\\r?\\n");
         int linesToCheck = Math.min(HEADER_LINES_TO_SCAN, lines.length);
 
         for (int i = 0; i < linesToCheck; i++) {
-            Matcher matcher = MODEL_PATTERN.matcher(lines[i]);
+            Matcher matcher = Patterns.MODEL_ANNOTATION.matcher(lines[i]);
             if (matcher.find()) return matcher.group(1);
         }
         return null;
@@ -38,7 +29,7 @@ public class SqlFileParser {
         int linesToCheck = Math.min(HEADER_LINES_TO_SCAN, lines.length);
 
         for (int i = 0; i < linesToCheck; i++) {
-            Matcher matcher = SWAGGER_PATTERN.matcher(lines[i]);
+            Matcher matcher = Patterns.SWAGGER_ANNOTATION.matcher(lines[i]);
             if (matcher.find()) {
                 return matcher.group(1);
             }
