@@ -11,8 +11,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelNameCompletionContributor extends CompletionContributor {
+
+    private static final ConcurrentHashMap<String, CachedSwagger> cache = new ConcurrentHashMap<>();
+
+    private static class CachedSwagger {
+        final long fileLastModified;
+        final SwaggerParser swaggerParser;
+
+        CachedSwagger(long fileLastModified, SwaggerParser swaggerParser) {
+            this.fileLastModified = fileLastModified;
+            this.swaggerParser = swaggerParser;
+        }
+    }
 
     public ModelNameCompletionContributor() {
         extend(CompletionType.BASIC,
@@ -31,18 +44,18 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                             return;
                         }
 
-                        // Загружаем Swagger
+                        // Получаем путь к Swagger файлу
                         String swaggerPath = SqlFileParser.extractSwaggerPath(file.getText());
                         if (swaggerPath == null) {
                             return;
                         }
 
                         File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
+                        String absolutePath = swaggerFile.getAbsolutePath();
 
-                        SwaggerParser swaggerParser = new SwaggerParser();
-                        try {
-                            swaggerParser.loadSwagger(swaggerFile.getAbsolutePath());
-                        } catch (FileNotFoundException e) {
+                        // Загружаем Swagger из кэша или парсим заново
+                        SwaggerParser swaggerParser = getOrLoadSwagger(absolutePath, swaggerFile);
+                        if (swaggerParser == null) {
                             return;
                         }
 
@@ -58,7 +71,6 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                                     )
                             );
                         }
-
                     }
 
                     private String getLineText(CompletionParameters parameters) {
@@ -69,5 +81,27 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                     }
                 }
         );
+    }
+
+    private static SwaggerParser getOrLoadSwagger(String absolutePath, File swaggerFile) {
+        long currentLastModified = swaggerFile.lastModified();
+
+        CachedSwagger cached = cache.compute(absolutePath, (path, existing) -> {
+            // Если кэш валиден — возвращаем как есть
+            if (existing != null && existing.fileLastModified == currentLastModified) {
+                return existing;
+            }
+
+            // Иначе парсим заново
+            SwaggerParser newParser = new SwaggerParser();
+            try {
+                newParser.loadSwagger(path);
+                return new CachedSwagger(currentLastModified, newParser);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+        });
+
+        return cached != null ? cached.swaggerParser : null;
     }
 }
