@@ -2,24 +2,19 @@ package com.binzaru.swaggerplugin.validation;
 
 import com.binzaru.swaggerplugin.parser.SqlFileParser;
 import com.binzaru.swaggerplugin.parser.SwaggerParser;
+import com.binzaru.swaggerplugin.patterns.Patterns;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ModelNameValidator implements Annotator {
-    private static final Pattern MODEL_NAME_PATTERN = Pattern.compile(
-            "--\\s*@model:\\s*(\\w+)",
-            Pattern.CASE_INSENSITIVE
-    );
 
     private final SwaggerParser parser = new SwaggerParser();
 
@@ -34,7 +29,7 @@ public class ModelNameValidator implements Annotator {
             return;
         }
 
-        Matcher matcher = MODEL_NAME_PATTERN.matcher(text);
+        Matcher matcher = Patterns.MODEL_ANNOTATION.matcher(text);
         if (!matcher.find()) {
             return;
         }
