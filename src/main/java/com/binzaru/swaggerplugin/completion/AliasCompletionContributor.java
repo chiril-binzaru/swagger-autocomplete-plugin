@@ -4,7 +4,9 @@ import com.binzaru.swaggerplugin.parser.SqlFileParser;
 import com.binzaru.swaggerplugin.parser.SwaggerModel;
 import com.binzaru.swaggerplugin.parser.SwaggerParser;
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.LookupElementWeigher;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.patterns.PlatformPatterns;
@@ -90,7 +92,22 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 prefix = lastPart;
                             }
                         }
-                        result = result.caseInsensitive().withPrefixMatcher(prefix);
+                        // Сортировщик только по нашим приоритетам (без группировки по релевантности)
+                        CompletionSorter sorter = CompletionSorter.emptySorter()
+                                .weigh(new LookupElementWeigher("swaggerOrder") {
+                                    @Override
+                                    public @NotNull Comparable<?> weigh(@NotNull LookupElement element) {
+                                        if (element instanceof PrioritizedLookupElement<?> prioritized) {
+                                            // Инвертируем: больший приоритет = меньшее значение = выше в списке
+                                            return -prioritized.getPriority();
+                                        }
+                                        return 0;
+                                    }
+                                });
+
+                        result = result.caseInsensitive()
+                                .withPrefixMatcher(prefix)
+                                .withRelevanceSorter(sorter);
 
                         // Определяем какую модель показывать
                         SwaggerModel targetModel = rootModel;
@@ -108,7 +125,8 @@ public class AliasCompletionContributor extends CompletionContributor {
                             }
                         }
 
-                        // Добавляем все поля модели в автодополнение
+                        // Добавляем все поля модели в автодополнение с приоритетом для сохранения порядка
+                        int priority = Integer.MAX_VALUE;
                         for (Map.Entry<String, SwaggerModel.PropertyInfo> entry : targetModel.getProperties().entrySet()) {
                             String fieldName = entry.getKey();
                             SwaggerModel.PropertyInfo info = entry.getValue();
@@ -128,7 +146,7 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 element = element.withTailText(" - " + info.getDescription(), true);
                             }
 
-                            result.addElement(element);
+                            result.addElement(PrioritizedLookupElement.withPriority(element, priority--));
                         }
                     }
                 }
