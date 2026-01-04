@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 public class SwaggerParserTest {
 
@@ -98,6 +100,22 @@ public class SwaggerParserTest {
     }
 
 
+    @Test
+    public void testGetAllModelNames_WhenSwaggerSuccessfullyLoaded_ShouldReturnAllModelNames() {
+        try {
+            swaggerParser.loadSwagger(validSwaggerPath);
+            assertEquals(createExpectedModelNames(), swaggerParser.getAllModelNames());
+        } catch (FileNotFoundException e) {
+            fail("loadSwagger() should not throw FileNotFoundException for a valid Swagger path");
+        }
+    }
+
+    @Test
+    public void testGetAllModelNames_WhenSwaggerIsNotLoaded_ShouldReturnEmptySetOfStrings() {
+        assertTrue(swaggerParser.getAllModelNames().isEmpty());
+    }
+
+
 
     private Map<String, SwaggerModel.PropertyInfo> createExpectedCustomerProfileProperties() {
         Map<String, SwaggerModel.PropertyInfo> properties = new LinkedHashMap<>();
@@ -127,6 +145,20 @@ public class SwaggerParserTest {
         properties.put("nextTierRequiredPoints", new SwaggerModel.PropertyInfo("integer", null, null));
         properties.put("specialBenefitsAndRewards", new SwaggerModel.PropertyInfo(null, null, "#/components/schemas/MemberBenefits"));
         return properties;
+    }
+
+    private Set<String> createExpectedModelNames() {
+        Set<String> modelNames = new LinkedHashSet<>();
+        modelNames.add("CustomerProfile");
+        modelNames.add("LoyaltyMembership");
+        modelNames.add("MemberBenefits");
+        modelNames.add("ShippingAddress");
+        modelNames.add("GeoLocation");
+        modelNames.add("BillingDetails");
+        modelNames.add("OrderSummary");
+        modelNames.add("ShipmentTracking");
+        modelNames.add("PaymentMethod");
+        return modelNames;
     }
 
 }
