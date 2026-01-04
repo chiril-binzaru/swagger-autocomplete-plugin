@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class ModelNameCompletionContributor extends CompletionContributor {
-    private final SwaggerParser parser = new SwaggerParser();
-    private String lastLoadedSwaggerPath = null;
 
     public ModelNameCompletionContributor() {
         extend(CompletionType.BASIC,
@@ -39,25 +37,28 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                             return;
                         }
 
-                        if (!parser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
-                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
+                        File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
 
-                            try {
-                                parser.loadSwagger(swaggerFile.getAbsolutePath());
-                                lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
-                            } catch (FileNotFoundException e) {
-                                return;
-                            }
+                        SwaggerParser swaggerParser = new SwaggerParser();
+                        try {
+                            swaggerParser.loadSwagger(swaggerFile.getAbsolutePath());
+                        } catch (FileNotFoundException e) {
+                            return;
                         }
 
-                        // Добавляем все модели в автодополнение
-                        for (String modelName : parser.getAllModelNames()) {
+                        // Добавляем все модели в автодополнение с приоритетом для сохранения порядка
+                        int priority = Integer.MAX_VALUE;
+                        for (String modelName : swaggerParser.getAllModelNames()) {
                             result.addElement(
-                                    LookupElementBuilder.create(modelName)
-                                            .withTypeText("Swagger Model")
-                                            .withCaseSensitivity(false)
+                                    PrioritizedLookupElement.withPriority(
+                                            LookupElementBuilder.create(modelName)
+                                                    .withTypeText("Swagger Model")
+                                                    .withCaseSensitivity(false),
+                                            priority--
+                                    )
                             );
                         }
+
                     }
 
                     private String getLineText(CompletionParameters parameters) {
