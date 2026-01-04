@@ -82,6 +82,22 @@ public class SwaggerParserTest {
     }
 
 
+    @Test
+    public void testResolveRef_ValidRef_ShouldReturnSwaggerModel() {
+        try {
+            swaggerParser.loadSwagger(validSwaggerPath);
+
+            SwaggerModel model = swaggerParser.resolveRef("#/components/schemas/LoyaltyMembership");
+
+            assertNotNull(model);
+            assertEquals("LoyaltyMembership", model.getName());
+            assertEquals(createExpectedLoyaltyMembershipProperties(), model.getProperties());
+        } catch (FileNotFoundException e) {
+            fail("loadSwagger() should not throw FileNotFoundException for a valid Swagger path");
+        }
+    }
+
+
 
     private Map<String, SwaggerModel.PropertyInfo> createExpectedCustomerProfileProperties() {
         Map<String, SwaggerModel.PropertyInfo> properties = new LinkedHashMap<>();
@@ -98,6 +114,18 @@ public class SwaggerParserTest {
         properties.put("billingInformation", new SwaggerModel.PropertyInfo(null, null, "#/components/schemas/BillingDetails"));
         properties.put("orderHistory", new SwaggerModel.PropertyInfo("array", null, null));
         properties.put("preferredPaymentMethods", new SwaggerModel.PropertyInfo("array", null, null));
+        return properties;
+    }
+
+    private Map<String, SwaggerModel.PropertyInfo> createExpectedLoyaltyMembershipProperties() {
+        Map<String, SwaggerModel.PropertyInfo> properties = new LinkedHashMap<>();
+        properties.put("membershipId", new SwaggerModel.PropertyInfo("integer", null, null));
+        properties.put("membershipTierLevel", new SwaggerModel.PropertyInfo("string", "bronze, silver, gold, platinum", null));
+        properties.put("totalPointsAccumulated", new SwaggerModel.PropertyInfo("integer", null, null));
+        properties.put("availablePointsBalance", new SwaggerModel.PropertyInfo("integer", null, null));
+        properties.put("memberSinceDate", new SwaggerModel.PropertyInfo("string", null, null));
+        properties.put("nextTierRequiredPoints", new SwaggerModel.PropertyInfo("integer", null, null));
+        properties.put("specialBenefitsAndRewards", new SwaggerModel.PropertyInfo(null, null, "#/components/schemas/MemberBenefits"));
         return properties;
     }
 
