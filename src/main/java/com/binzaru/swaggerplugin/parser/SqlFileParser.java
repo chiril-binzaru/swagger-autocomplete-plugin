@@ -5,7 +5,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.io.File;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -38,12 +37,7 @@ public class SqlFileParser {
     }
 
     public static String[] extractAliasPath(String textBeforeCursor) {
-        Pattern pattern = Pattern.compile(
-                "\\bAS\\s+[\"']?([\\w.]*)$",
-                Pattern.CASE_INSENSITIVE
-        );
-
-        Matcher matcher = pattern.matcher(textBeforeCursor);
+        Matcher matcher = Patterns.ALIAS_PATH.matcher(textBeforeCursor);
         if (matcher.find()) {
             String alias = matcher.group(1);
 
