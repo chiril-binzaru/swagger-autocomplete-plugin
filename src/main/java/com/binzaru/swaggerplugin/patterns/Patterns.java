@@ -21,5 +21,11 @@ public final class Patterns {
             Pattern.CASE_INSENSITIVE
     );
 
+    // Извлечение пути алиаса после AS
+    public static final Pattern ALIAS_PATH = Pattern.compile(
+            "\\bAS\\s+[\"']?([\\w.]*)$",
+            Pattern.CASE_INSENSITIVE
+    );
+
     private Patterns() {}
 }
