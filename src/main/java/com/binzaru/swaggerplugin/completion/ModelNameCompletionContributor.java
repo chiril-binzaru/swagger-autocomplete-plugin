@@ -1,6 +1,7 @@
 package com.binzaru.swaggerplugin.completion;
 
 import com.binzaru.swaggerplugin.parser.SqlFileParser;
+import com.binzaru.swaggerplugin.parser.SwaggerCache;
 import com.binzaru.swaggerplugin.parser.SwaggerParser;
 import com.binzaru.swaggerplugin.patterns.Patterns;
 import com.intellij.codeInsight.completion.*;
@@ -11,22 +12,8 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelNameCompletionContributor extends CompletionContributor {
-
-    private static final ConcurrentHashMap<String, CachedSwagger> cache = new ConcurrentHashMap<>();
-
-    private static class CachedSwagger {
-        final long fileLastModified;
-        final SwaggerParser swaggerParser;
-
-        CachedSwagger(long fileLastModified, SwaggerParser swaggerParser) {
-            this.fileLastModified = fileLastModified;
-            this.swaggerParser = swaggerParser;
-        }
-    }
 
     public ModelNameCompletionContributor() {
         extend(CompletionType.BASIC,
@@ -52,10 +39,9 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                         }
 
                         File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
-                        String absolutePath = swaggerFile.getAbsolutePath();
 
                         // Загружаем Swagger из кэша или парсим заново
-                        SwaggerParser swaggerParser = getOrLoadSwagger(absolutePath, swaggerFile);
+                        SwaggerParser swaggerParser = SwaggerCache.getOrLoad(swaggerFile);
                         if (swaggerParser == null) {
                             return;
                         }
@@ -82,27 +68,5 @@ public class ModelNameCompletionContributor extends CompletionContributor {
                     }
                 }
         );
-    }
-
-    private static SwaggerParser getOrLoadSwagger(String absolutePath, File swaggerFile) {
-        long currentLastModified = swaggerFile.lastModified();
-
-        CachedSwagger cached = cache.compute(absolutePath, (path, existing) -> {
-            // Если кэш валиден — возвращаем как есть
-            if (existing != null && existing.fileLastModified == currentLastModified) {
-                return existing;
-            }
-
-            // Иначе парсим заново
-            SwaggerParser newParser = new SwaggerParser();
-            try {
-                newParser.loadSwagger(path);
-                return new CachedSwagger(currentLastModified, newParser);
-            } catch (FileNotFoundException e) {
-                return null;
-            }
-        });
-
-        return cached != null ? cached.swaggerParser : null;
     }
 }

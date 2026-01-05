@@ -115,6 +115,14 @@ public class SwaggerParserTest {
         assertTrue(swaggerParser.getAllModelNames().isEmpty());
     }
 
+    @Test
+    public void testUnixDate() {
+        String dateOne = new java.util.Date(1767609028645L).toString();
+        String dateTwo = new java.util.Date(1766569074194L).toString();
+
+        System.out.println(dateOne + " " + dateTwo);
+    }
+
 
 
     private Map<String, SwaggerModel.PropertyInfo> createExpectedCustomerProfileProperties() {
