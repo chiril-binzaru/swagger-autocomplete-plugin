@@ -1,6 +1,7 @@
 package com.binzaru.swaggerplugin.completion;
 
 import com.binzaru.swaggerplugin.parser.SqlFileParser;
+import com.binzaru.swaggerplugin.parser.SwaggerCache;
 import com.binzaru.swaggerplugin.parser.SwaggerModel;
 import com.binzaru.swaggerplugin.parser.SwaggerParser;
 import com.intellij.codeInsight.completion.*;
@@ -14,19 +15,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
-import java.util.Map;
 import java.io.File;
+import java.util.Map;
 
 public class AliasCompletionContributor extends CompletionContributor {
-
-    /**
-     * Parser that loads and stores Swagger/OpenAPI schema models from .json file.
-     * Holds parsed model structures in memory for autocomplete suggestions.
-     */
-    private final SwaggerParser swaggerParser = new SwaggerParser();
-
-    private String lastLoadedSwaggerPath = null;
 
     public AliasCompletionContributor() {
         extend(CompletionType.BASIC,
@@ -44,21 +36,16 @@ public class AliasCompletionContributor extends CompletionContributor {
                         */
                         PsiFile psiFile = parameters.getOriginalFile();
 
-                        // Загружаем Swagger если еще не загружен
+                        // Загружаем Swagger из кэша
                         String swaggerPath = SqlFileParser.extractSwaggerPath(psiFile.getText());
                         if (swaggerPath == null) {
                             return;
                         }
 
-                        if (!swaggerParser.isLoaded() || !swaggerPath.equals(lastLoadedSwaggerPath)) {
-                            File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, psiFile.getVirtualFile());
-
-                            try {
-                                swaggerParser.loadSwagger(swaggerFile.getAbsolutePath());
-                                lastLoadedSwaggerPath = swaggerFile.getAbsolutePath();
-                            } catch (FileNotFoundException e) {
-                                return;
-                            }
+                        File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, psiFile.getVirtualFile());
+                        SwaggerParser swaggerParser = SwaggerCache.getOrLoad(swaggerFile);
+                        if (swaggerParser == null) {
+                            return;
                         }
 
                         // Получаем модель из @model
