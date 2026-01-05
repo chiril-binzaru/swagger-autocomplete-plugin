@@ -18,14 +18,14 @@ public class SwaggerPathValidator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        // Обрабатываем только листовые элементы (без детей), чтобы избежать двойного срабатывания
+        // Process only leaf elements (without children) to avoid double triggering
         if (element.getFirstChild() != null) {
             return;
         }
 
         String text = element.getText();
 
-        // Обрабатываем только если весь текст элемента содержит @swagger
+        // Process only if the element text contains @swagger
         if (!text.trim().startsWith("--") || !text.contains("@swagger")) {
             return;
         }
@@ -38,7 +38,7 @@ public class SwaggerPathValidator implements Annotator {
             int end = element.getTextRange().getStartOffset() + matcher.end(1);
             TextRange range = new TextRange(start, end);
 
-            // Резолвим путь относительно текущего файла
+            // Resolve path relative to the current file
             VirtualFile currentFile = element.getContainingFile().getVirtualFile();
             File swaggerFile = SqlFileParser.resolveSwaggerPath(path, currentFile);
 

@@ -39,40 +39,40 @@ public class ModelNameValidator implements Annotator {
         int end = element.getTextRange().getStartOffset() + matcher.end(1);
         TextRange range = new TextRange(start, end);
 
-        // Загружаем Swagger
+        // Load Swagger
         String swaggerPath = SqlFileParser.extractSwaggerPath(element.getContainingFile().getText());
         if (swaggerPath == null) {
             return;
         }
 
-        // Резолвим путь
+        // Resolve path
         File swaggerFile = SqlFileParser.resolveSwaggerPath(
                 swaggerPath,
                 element.getContainingFile().getVirtualFile()
         );
 
         if (!swaggerFile.exists()) {
-            return; // Swagger не найден - не валидируем модель
+            return; // Swagger not found - skip model validation
         }
 
-        // Загружаем Swagger и проверяем модель
+        // Load Swagger and validate model
         try {
             parser.loadSwagger(swaggerFile.getAbsolutePath());
 
             if (parser.getModel(modelName) != null) {
-                // Модель найдена - зелёная подсветка
+                // Model found - green highlight
                 holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                         .range(range)
                         .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
                         .create();
             } else {
-                // Модель не найдена - ошибка
+                // Model not found - error
                 holder.newAnnotation(HighlightSeverity.ERROR, "Model '" + modelName + "' not found in Swagger schema")
                         .range(range)
                         .create();
             }
         } catch (Exception e) {
-            // Ошибка загрузки Swagger - не валидируем
+            // Swagger loading error - skip validation
         }
     }
 }

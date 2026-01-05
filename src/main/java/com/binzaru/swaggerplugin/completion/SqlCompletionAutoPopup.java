@@ -15,7 +15,7 @@ public class SqlCompletionAutoPopup extends TypedHandlerDelegate {
                                           @NotNull Editor editor,
                                           @NotNull PsiFile file) {
 
-        // Триггерим автодополнение после пробела или кавычки
+        // Trigger autocompletion after space or quote
         if (charTyped == ' ' || charTyped == '"') {
             AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
             return Result.STOP;

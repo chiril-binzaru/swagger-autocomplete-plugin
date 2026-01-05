@@ -30,7 +30,7 @@ public class Highlighter implements Annotator {
 
         String text = element.getText();
 
-        // Подсвечиваем аннотации
+        // Highlight annotations
         Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(text);
         while (annotationMatcher.find()) {
             int start = element.getTextRange().getStartOffset() + annotationMatcher.start(1);
@@ -42,7 +42,7 @@ public class Highlighter implements Annotator {
                     .create();
         }
 
-        // Подсвечиваем параметры
+        // Highlight parameters
         Matcher parameterMatcher = PARAMETER_PATTERN.matcher(text);
         while (parameterMatcher.find()) {
             int start = element.getTextRange().getStartOffset() + parameterMatcher.start();
