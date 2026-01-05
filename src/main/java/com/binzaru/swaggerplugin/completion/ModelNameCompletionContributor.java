@@ -26,13 +26,13 @@ public class ModelNameCompletionContributor extends CompletionContributor {
 
                         PsiFile file = parameters.getOriginalFile();
 
-                        // Проверяем что мы в строке с @model:
+                        // Check if we are on a line with @model:
                         String lineText = getLineText(parameters);
                         if (!Patterns.MODEL_COMPLETION_TRIGGER.matcher(lineText).matches()) {
                             return;
                         }
 
-                        // Получаем путь к Swagger файлу
+                        // Get the Swagger file path
                         String swaggerPath = SqlFileParser.extractSwaggerPath(file.getText());
                         if (swaggerPath == null) {
                             return;
@@ -40,13 +40,13 @@ public class ModelNameCompletionContributor extends CompletionContributor {
 
                         File swaggerFile = SqlFileParser.resolveSwaggerPath(swaggerPath, file.getVirtualFile());
 
-                        // Загружаем Swagger из кэша или парсим заново
+                        // Load Swagger from cache or parse anew
                         SwaggerParser swaggerParser = SwaggerCache.getOrLoad(swaggerFile);
                         if (swaggerParser == null) {
                             return;
                         }
 
-                        // Добавляем все модели в автодополнение с приоритетом для сохранения порядка
+                        // Add all models to autocompletion with priority to preserve order
                         int priority = Integer.MAX_VALUE;
                         for (String modelName : swaggerParser.getAllModelNames()) {
                             result.addElement(

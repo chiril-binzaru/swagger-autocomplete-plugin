@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public final class Patterns {
 
-    // Аннотации в SQL файлах
+    // SQL file annotations
     public static final Pattern MODEL_ANNOTATION = Pattern.compile(
             "--\\s*@model:\\s*(\\w+)",
             Pattern.CASE_INSENSITIVE
@@ -15,13 +15,13 @@ public final class Patterns {
             Pattern.CASE_INSENSITIVE
     );
 
-    // Триггер автодополнения для имени модели
+    // Model name autocompletion trigger
     public static final Pattern MODEL_COMPLETION_TRIGGER = Pattern.compile(
             ".*--\\s*@model:\\s*\\w*$",
             Pattern.CASE_INSENSITIVE
     );
 
-    // Извлечение пути алиаса после AS
+    // Alias path extraction after AS
     public static final Pattern ALIAS_PATH = Pattern.compile(
             "\\bAS\\s+[\"']?([\\w.]*)$",
             Pattern.CASE_INSENSITIVE

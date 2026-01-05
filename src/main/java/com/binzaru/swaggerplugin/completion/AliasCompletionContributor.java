@@ -36,7 +36,7 @@ public class AliasCompletionContributor extends CompletionContributor {
                         */
                         PsiFile psiFile = parameters.getOriginalFile();
 
-                        // Загружаем Swagger из кэша
+                        // Load Swagger from cache
                         String swaggerPath = SqlFileParser.extractSwaggerPath(psiFile.getText());
                         if (swaggerPath == null) {
                             return;
@@ -48,14 +48,14 @@ public class AliasCompletionContributor extends CompletionContributor {
                             return;
                         }
 
-                        // Получаем модель из @model
+                        // Get model from @model
                         String modelName = SqlFileParser.extractModelName(psiFile.getText());
                         if (modelName == null) return;
 
                         SwaggerModel rootModel = swaggerParser.getModel(modelName);
                         if (rootModel == null) return;
 
-                        // Получаем текст до курсора
+                        // Get text before cursor
                         Document document = FileDocumentManager.getInstance().getDocument(psiFile.getVirtualFile());
                         if (document == null) return;
 
@@ -63,15 +63,15 @@ public class AliasCompletionContributor extends CompletionContributor {
                         int lineStart = document.getLineStartOffset(document.getLineNumber(offset));
                         String textBeforeCursor = document.getText().substring(lineStart, offset);
 
-                        // Парсим путь алиаса
+                        // Parse the alias path
                         String[] aliasPath = SqlFileParser.extractAliasPath(textBeforeCursor);
 
-                        // Проверяем что есть AS в строке
+                        // Check that AS is present in the line
                         if (!textBeforeCursor.toUpperCase().contains(" AS ")) {
                             return;
                         }
 
-                        // Извлекаем префикс для фильтрации
+                        // Extract prefix for filtering
                         String prefix = "";
                         if (aliasPath.length > 0) {
                             String lastPart = aliasPath[aliasPath.length - 1];
@@ -79,13 +79,13 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 prefix = lastPart;
                             }
                         }
-                        // Сортировщик только по нашим приоритетам (без группировки по релевантности)
+                        // Sorter by our priorities only (without relevance grouping)
                         CompletionSorter sorter = CompletionSorter.emptySorter()
                                 .weigh(new LookupElementWeigher("swaggerOrder") {
                                     @Override
                                     public @NotNull Comparable<?> weigh(@NotNull LookupElement element) {
                                         if (element instanceof PrioritizedLookupElement<?> prioritized) {
-                                            // Инвертируем: больший приоритет = меньшее значение = выше в списке
+                                            // Invert: higher priority = lower value = higher in the list
                                             return -prioritized.getPriority();
                                         }
                                         return 0;
@@ -96,23 +96,23 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 .withPrefixMatcher(prefix)
                                 .withRelevanceSorter(sorter);
 
-                        // Определяем какую модель показывать
+                        // Determine which model to show
                         SwaggerModel targetModel = rootModel;
 
                         if (aliasPath.length > 0) {
-                            // Навигируемся по пути (например ["address"])
+                            // Navigate through the path (e.g. ["address"])
                             for (int i = 0; i < aliasPath.length - 1; i++) {
                                 SwaggerModel.PropertyInfo prop = targetModel.getProperty(aliasPath[i]);
                                 if (prop != null && prop.isReference()) {
                                     targetModel = swaggerParser.resolveRef(prop.getRef());
                                     if (targetModel == null) return;
                                 } else if (prop == null) {
-                                    return;  // Поле не найдено - выходим
+                                    return;  // Field not found - exit
                                 }
                             }
                         }
 
-                        // Добавляем все поля модели в автодополнение с приоритетом для сохранения порядка
+                        // Add all model fields to autocompletion with priority to preserve order
                         int priority = Integer.MAX_VALUE;
                         for (Map.Entry<String, SwaggerModel.PropertyInfo> entry : targetModel.getProperties().entrySet()) {
                             String fieldName = entry.getKey();

@@ -41,14 +41,14 @@ public class SqlFileParser {
         if (matcher.find()) {
             String alias = matcher.group(1);
 
-            // Если алиас пустой (AS " или AS )
+            // If alias is empty (AS " or AS )
             if (alias.isEmpty()) {
                 return new String[]{""};
             }
 
             String[] parts = alias.split("\\.");
 
-            // Если заканчивается точкой, добавляем пустую строку
+            // If ends with a dot, add an empty string
             if (alias.endsWith(".")) {
                 String[] result = new String[parts.length + 1];
                 System.arraycopy(parts, 0, result, 0, parts.length);
