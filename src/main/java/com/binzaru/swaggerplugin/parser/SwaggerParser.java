@@ -85,6 +85,14 @@ public class SwaggerParser {
                     String description = propData.has("description") ? propData.get("description").getAsString() : null;
                     String ref = propData.has("$ref") ? propData.get("$ref").getAsString() : null;
 
+                    // Handle array with items.$ref
+                    if ("array".equals(type) && propData.has("items")) {
+                        JsonObject items = propData.getAsJsonObject("items");
+                        if (items.has("$ref")) {
+                            ref = items.get("$ref").getAsString();
+                        }
+                    }
+
                     SwaggerModel.PropertyInfo info = new SwaggerModel.PropertyInfo(type, description, ref);
                     model.addProperty(propName, info);
                 }
