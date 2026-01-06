@@ -45,5 +45,12 @@
                 description="Generates a SELECT statement with all fields from the Swagger model">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift G"/>
         </action>
+
+        <action id="com.binzaru.swaggerplugin.ToggleAliasQuotes"
+                class="com.binzaru.swaggerplugin.action.ToggleAliasQuotesAction"
+                text="Toggle Quotes on Aliases"
+                description="Adds or removes double quotes from all SQL aliases">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Q"/>
+        </action>
     </actions>
 </idea-plugin>

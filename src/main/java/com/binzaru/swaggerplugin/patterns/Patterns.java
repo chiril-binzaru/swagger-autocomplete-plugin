@@ -34,5 +34,11 @@ public final class Patterns {
             Pattern.CASE_INSENSITIVE
     );
 
+    // For toggling quotes: Group 1: whitespace, Group 2: opening quote, Group 3: alias, Group 4: closing quote
+    public static final Pattern ALIAS_WITH_QUOTES = Pattern.compile(
+            "\\bAS(\\s+)([\"']?)([\\w.]+)([\"']?)",
+            Pattern.CASE_INSENSITIVE
+    );
+
     private Patterns() {}
 }
