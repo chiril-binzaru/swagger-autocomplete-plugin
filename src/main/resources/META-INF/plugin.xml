@@ -43,14 +43,21 @@
                 class="com.binzaru.swaggerplugin.action.GenerateSelectAction"
                 text="Generate SELECT from Swagger Model"
                 description="Generates a SELECT statement with all fields from the Swagger model">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift G"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
         </action>
 
         <action id="com.binzaru.swaggerplugin.ToggleAliasQuotes"
                 class="com.binzaru.swaggerplugin.action.ToggleAliasQuotesAction"
                 text="Toggle Quotes on Aliases"
                 description="Adds or removes double quotes from all SQL aliases">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Q"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
+        </action>
+
+        <action id="com.binzaru.swaggerplugin.CopyWithoutAnnotations"
+                class="com.binzaru.swaggerplugin.action.CopyWithoutAnnotationsAction"
+                text="Copy Without Annotations"
+                description="Copies SQL file content without @swagger and @model annotation lines">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt C"/>
         </action>
     </actions>
 </idea-plugin>
