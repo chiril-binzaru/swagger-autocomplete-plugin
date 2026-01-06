@@ -33,4 +33,13 @@
         <typedHandler
                 implementation="com.binzaru.swaggerplugin.completion.SqlCompletionAutoPopup"/>
     </extensions>
+
+    <actions>
+        <action id="com.binzaru.swaggerplugin.GenerateSelect"
+                class="com.binzaru.swaggerplugin.action.GenerateSelectAction"
+                text="Generate SELECT from Swagger Model"
+                description="Generates a SELECT statement with all fields from the Swagger model">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift G"/>
+        </action>
+    </actions>
 </idea-plugin>
