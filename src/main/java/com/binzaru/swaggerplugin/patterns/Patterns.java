@@ -21,9 +21,16 @@ public final class Patterns {
             Pattern.CASE_INSENSITIVE
     );
 
-    // Alias path extraction after AS
+    // Alias path extraction after AS (for autocompletion)
     public static final Pattern ALIAS_PATH = Pattern.compile(
             "\\bAS\\s+[\"']?([\\w.]*)$",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    // Full alias for validation (captures complete alias after AS, with optional quotes)
+    // Group 1: opening quote (optional), Group 2: alias path
+    public static final Pattern ALIAS_VALIDATION = Pattern.compile(
+            "\\bAS\\s+([\"']?)([\\w.]+)[\"']?",
             Pattern.CASE_INSENSITIVE
     );
 
