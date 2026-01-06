@@ -106,8 +106,9 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 if (prop != null && prop.isReference()) {
                                     targetModel = swaggerParser.resolveRef(prop.getRef());
                                     if (targetModel == null) return;
-                                } else if (prop == null) {
-                                    return;  // Field not found - exit
+                                } else {
+                                    // Field not found OR field is primitive - cannot navigate further
+                                    return;
                                 }
                             }
                         }
