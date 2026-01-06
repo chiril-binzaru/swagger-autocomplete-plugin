@@ -30,6 +30,10 @@
                 language="TEXT"
                 implementationClass="com.binzaru.swaggerplugin.validation.SwaggerPathValidator"/>
 
+        <annotator
+                language="TEXT"
+                implementationClass="com.binzaru.swaggerplugin.validation.AliasValidator"/>
+
         <typedHandler
                 implementation="com.binzaru.swaggerplugin.completion.SqlCompletionAutoPopup"/>
     </extensions>
