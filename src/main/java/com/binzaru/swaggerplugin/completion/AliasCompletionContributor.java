@@ -79,22 +79,6 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 prefix = lastPart;
                             }
                         }
-                        // Sorter by our priorities only (without relevance grouping)
-                        CompletionSorter sorter = CompletionSorter.emptySorter()
-                                .weigh(new LookupElementWeigher("swaggerOrder") {
-                                    @Override
-                                    public @NotNull Comparable<?> weigh(@NotNull LookupElement element) {
-                                        if (element instanceof PrioritizedLookupElement<?> prioritized) {
-                                            // Invert: higher priority = lower value = higher in the list
-                                            return -prioritized.getPriority();
-                                        }
-                                        return 0;
-                                    }
-                                });
-
-                        result = result.caseInsensitive()
-                                .withPrefixMatcher(prefix)
-                                .withRelevanceSorter(sorter);
 
                         // Determine which model to show
                         SwaggerModel targetModel = rootModel;
@@ -112,6 +96,23 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 }
                             }
                         }
+
+                        // Sorter by our priorities only (without relevance grouping)
+                        CompletionSorter sorter = CompletionSorter.emptySorter()
+                                .weigh(new LookupElementWeigher("swaggerOrder") {
+                                    @Override
+                                    public @NotNull Comparable<?> weigh(@NotNull LookupElement element) {
+                                        if (element instanceof PrioritizedLookupElement<?> prioritized) {
+                                            // Invert: higher priority = lower value = higher in the list
+                                            return -prioritized.getPriority();
+                                        }
+                                        return 0;
+                                    }
+                                });
+
+                        CompletionResultSet sortedResult = result.caseInsensitive()
+                                .withPrefixMatcher(prefix)
+                                .withRelevanceSorter(sorter);
 
                         // Add all model fields to autocompletion with priority to preserve order
                         int priority = Integer.MAX_VALUE;
@@ -134,8 +135,14 @@ public class AliasCompletionContributor extends CompletionContributor {
                                 element = element.withTailText(" - " + info.getDescription(), true);
                             }
 
-                            result.addElement(PrioritizedLookupElement.withPriority(element, priority--));
+                            sortedResult.addElement(PrioritizedLookupElement.withPriority(element, priority--));
                         }
+
+                        // Run remaining contributors and add their elements with low priority
+                        result.runRemainingContributors(parameters, completionResult -> {
+                            LookupElement element = completionResult.getLookupElement();
+                            sortedResult.addElement(PrioritizedLookupElement.withPriority(element, -1000));
+                        }, true);
                     }
                 }
         );
